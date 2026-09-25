@@ -1,8 +1,8 @@
 class Snap < Formula
   desc "Typed decisions from a single forward pass (single-pass neural answer probabilities)"
   homepage "https://github.com/emnlmn/snap"
-  url "https://github.com/emnlmn/snap/releases/download/v0.1.0/snap-macos-arm64.tar.gz"
-  sha256 "edd971cc7f332ac598f58d69a37b0d175ce698d63339a6a06e5b59b1a8045843"
+  url "https://github.com/emnlmn/snap/releases/download/v0.2.0/snap-macos-arm64.tar.gz"
+  sha256 "fb051bb825bf5e2ce788895ad7826179c73619781718c657a9a489ee169204b8"
   license "MIT"
 
   depends_on arch: :arm64
