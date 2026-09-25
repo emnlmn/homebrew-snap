@@ -1,0 +1,35 @@
+name: bump
+
+on:
+  schedule:
+    - cron: "37 6 * * *" # daily, off-hour
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: update formula to latest snap release
+        run: |
+          set -euo pipefail
+          rel=$(curl -fsSL https://api.github.com/repos/emnlmn/snap/releases/latest)
+          tag=$(jq -r .tag_name <<<"$rel")
+          asset=$(jq -r '.assets[] | select(.name == "snap-macos-arm64.tar.gz") | .browser_download_url' <<<"$rel")
+          [ -n "$tag" ] && [ -n "$asset" ]
+          if grep -q "releases/download/$tag/" Formula/snap.rb; then
+            echo "already at $tag"
+            exit 0
+          fi
+          sha=$(curl -fsSL "$asset" | sha256sum | cut -d' ' -f1)
+          sed -i \
+            -e "s|releases/download/[^/]*/|releases/download/$tag/|" \
+            -e "s|^  sha256 .*|  sha256 \"$sha\"|" \
+            Formula/snap.rb
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -am "snap $tag"
+          git push
